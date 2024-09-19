@@ -1,9 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function Question({ question, onAnswered }) {
   const [timeRemaining, setTimeRemaining] = useState(10);
 
-  // add useEffect code
+  useEffect(() => {
+    // Set up the timer when the component mounts
+    const timerId = setTimeout(() => {
+      onAnswered(false); // Call onAnswered after 10 seconds
+    }, 10000);
+
+    // Interval to decrement the timer every second
+    const intervalId = setInterval(() => {
+      setTimeRemaining(prevTime => {
+        if (prevTime <= 1) {
+          clearInterval(intervalId); // Stop the interval when time is up
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+
+    // Clean up timers when the component unmounts
+    return () => {
+      clearTimeout(timerId);
+      clearInterval(intervalId);
+    };
+  }, [onAnswered]);
 
   function handleAnswer(isCorrect) {
     setTimeRemaining(10);
